@@ -4,11 +4,15 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-
+import { useRouter } from "next/navigation";
 import CustomFormField from "../custom/CustomFormField";
 import { signUpFormSchema } from "@/lib/formvalidation";
+import { useState } from "react";
+import { createUser } from "@/lib/actions/patient.actions";
 
 const PatientSignupForm = () => {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
   // 1. Define your form.
   const form = useForm<z.infer<typeof signUpFormSchema>>({
     resolver: zodResolver(signUpFormSchema),
@@ -21,10 +25,20 @@ const PatientSignupForm = () => {
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof signUpFormSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof signUpFormSchema>) {
+    setIsLoading(true);
+    try {
+      const { patientname, email, phone } = values;
+      const userData = { patientname, email, phone };
+      const user = await createUser(userData);
+      if (user) {
+        router.push(`/patients/${user.$id}/register`);
+      }
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+    }
+    setIsLoading(false);
   }
 
   return (
@@ -58,7 +72,9 @@ const PatientSignupForm = () => {
           form={form}
           fieldType="phoneinput"
         />
-        <Button type="submit">Submit</Button>
+        <Button className="shad-primary-btn w-full" type="submit">
+          {isLoading ? "Loading..." : "Submit"}
+        </Button>
       </form>
     </Form>
   );

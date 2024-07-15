@@ -9,7 +9,7 @@ export const signUpFormSchema = z.object({
   phone: z
     .string()
     .refine(
-      (phone) => /^\+[1-9]{1}[0-9]{3,14}$/.test(phone),
+      (phone) => /^\+[1-9]{1}[0-9]{3,11}$/.test(phone),
       "Invalid phone number"
     ),
 });

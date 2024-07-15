@@ -62,7 +62,7 @@ const RenderInput = ({
           placeholder={placeholder}
           defaultCountry="IN"
           value={field.value}
-          international
+          international={false}
           withCountryCallingCode
           className="input-phone"
           onChange={field.onChange}
